@@ -4,64 +4,90 @@ on:
   push:
     branches: [main]
 
-# Required by changesets/action: write to repo (commits, tags, releases) and PRs.
-permissions:
-  contents: write
-  pull-requests: write
-  # Enables npm provenance attestations on `npm publish` (recommended; harmless if unused).
-  id-token: write
-
-# Never cancel an in-flight release; queue subsequent pushes instead.
+# Don't kill an in-flight publish.
 concurrency:
-  group: release
+  group: release-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  release:
-    name: Version or publish
+  publish:
+    name: Publish to npm
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      # Needed for `npm publish --provenance` OIDC.
+      id-token: write
     steps:
       - uses: actions/checkout@v4
-        # Full history is required so changesets can compute the version diff.
         with:
           fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
+      - uses: pnpm/action-setup@v4
 
-      - name: Setup Node 20
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: 22
           cache: pnpm
-          # registry-url is required so setup-node writes the npm auth token.
-          registry-url: https://registry.npmjs.org
+          registry-url: "https://registry.npmjs.org"
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
+
+      - name: "Plan: which packages need publishing"
+        id: plan
+        run: |
+          to_publish=""
+          for dir in packages/*/; do
+            pkg=$(basename "$dir")
+            name=$(node -p "require('./packages/$pkg/package.json').name")
+            version=$(node -p "require('./packages/$pkg/package.json').version")
+            private=$(node -p "require('./packages/$pkg/package.json').private || false")
+            if [[ "$private" == "true" ]]; then
+              echo "::notice::$name is private — skipping"
+              continue
+            fi
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "::notice::$name@$version already on npm — skipping"
+            else
+              echo "::notice::$name@$version needs publishing"
+              to_publish="$to_publish $pkg"
+            fi
+          done
+          echo "to_publish=${to_publish# }" >>"$GITHUB_OUTPUT"
 
       - name: Typecheck
+        if: steps.plan.outputs.to_publish != ''
         run: pnpm typecheck
 
       - name: Test
+        if: steps.plan.outputs.to_publish != ''
         run: pnpm test
 
       - name: Build
+        if: steps.plan.outputs.to_publish != ''
         run: pnpm build
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          # When pending changesets exist on main: opens/updates the "Version Packages" PR.
-          # When the most recent commit on main is the merged "Version Packages" PR: runs publish.
-          version: pnpm version-packages
-          publish: pnpm release
-          commit: "chore(release): version packages"
-          title: "chore(release): version packages"
+      - name: Publish
+        if: steps.plan.outputs.to_publish != ''
+        run: |
+          for pkg in ${{ steps.plan.outputs.to_publish }}; do
+            echo "::notice::Publishing $pkg"
+            (cd "packages/$pkg" && pnpm publish --access public --no-git-checks --provenance)
+          done
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Tag releases
+        if: steps.plan.outputs.to_publish != ''
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for pkg in ${{ steps.plan.outputs.to_publish }}; do
+            version=$(node -p "require('./packages/$pkg/package.json').version")
+            tag="${pkg}@${version}"
+            if git rev-parse "$tag" >/dev/null 2>&1; then
+              echo "::notice::tag $tag already exists — skipping"
+              continue
+            fi
+            git tag -a "$tag" -m "$tag"
+            git push origin "$tag"
+          done
