@@ -1,5 +1,5 @@
 {
-  "name": "@mail-station/mailbox-station-conformance",
+  "name": "mailbox-station-conformance",
   "version": "0.1.0",
   "type": "module",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@mail-station/mailbox-station": "workspace:*"
+    "mailbox-station": "workspace:*"
   },
   "peerDependencies": {
     "vitest": "^2.0.0 || ^3.0.0"

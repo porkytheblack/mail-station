@@ -1,5 +1,5 @@
-import { createStation, ok, UserId } from "@mail-station/mailbox-station"
-import { gmailProvider } from "@mail-station/gmail-station"
+import { createStation, ok, UserId } from "mailbox-station"
+import { gmailProvider } from "gmail-station"
 import { createSqliteStore } from "./sqlite-store.js"
 
 /**

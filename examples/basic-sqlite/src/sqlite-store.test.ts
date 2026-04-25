@@ -1,4 +1,4 @@
-import { runStoreConformance } from "@mail-station/mailbox-station-conformance"
+import { runStoreConformance } from "mailbox-station-conformance"
 import { mkdtempSync, rmSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"

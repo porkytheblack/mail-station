@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { ok, err, UserId } from "@mail-station/mailbox-station"
-import { createReferenceStore } from "@mail-station/mailbox-station-conformance"
+import { ok, err, UserId } from "mailbox-station"
+import { createReferenceStore } from "mailbox-station-conformance"
 import { createWatchManager } from "./watch.js"
 import type { GmailClient, GmailClientFactory, ResolvedGmailConfig } from "./types.js"
 

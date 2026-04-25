@@ -1,6 +1,6 @@
 import { Effect } from "effect"
 import { describe, expect, it } from "vitest"
-import { createReferenceStore, synthMessage } from "@mail-station/mailbox-station-conformance"
+import { createReferenceStore, synthMessage } from "mailbox-station-conformance"
 import { createStation } from "./internal/station.js"
 import { createStationEffect } from "./effect.js"
 import { ok, UserId } from "./index.js"

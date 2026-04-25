@@ -1,5 +1,5 @@
 import { afterEach, describe } from "vitest"
-import type { StoreAdapter } from "@mail-station/mailbox-station"
+import type { StoreAdapter } from "mailbox-station"
 import { accountLifecycleTests } from "./tests/account-lifecycle.js"
 import { commitMessagesTests } from "./tests/commit-messages.js"
 import { triggerClaimTests } from "./tests/trigger-claim.js"

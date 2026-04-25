@@ -4,7 +4,7 @@ import {
   AccountId as makeAccountId,
   MessageId as makeMessageId,
   ThreadId as makeThreadId,
-} from "@mail-station/mailbox-station"
+} from "mailbox-station"
 import type {
   AccountId,
   AttachmentRef,
@@ -12,7 +12,7 @@ import type {
   MailMessage,
   MessageId,
   ThreadId,
-} from "@mail-station/mailbox-station"
+} from "mailbox-station"
 
 type Part = gmail_v1.Schema$MessagePart
 

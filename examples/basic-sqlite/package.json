@@ -8,12 +8,12 @@
     "start": "node --experimental-strip-types src/main.ts"
   },
   "dependencies": {
-    "@mail-station/gmail-station": "workspace:*",
-    "@mail-station/mailbox-station": "workspace:*",
+    "gmail-station": "workspace:*",
+    "mailbox-station": "workspace:*",
     "better-sqlite3": "^11.5.0"
   },
   "devDependencies": {
-    "@mail-station/mailbox-station-conformance": "workspace:*",
+    "mailbox-station-conformance": "workspace:*",
     "@types/better-sqlite3": "^7.6.11"
   }
 }

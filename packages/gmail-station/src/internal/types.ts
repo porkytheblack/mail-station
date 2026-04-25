@@ -9,7 +9,7 @@ import type {
   Result,
   StoreAdapter,
   UserIdType,
-} from "@mail-station/mailbox-station"
+} from "mailbox-station"
 
 export type ServiceAccountKey = {
   readonly client_email: string
@@ -135,8 +135,8 @@ export type RenewSummary = {
 
 export type GmailRuntimeDeps = {
   readonly store: StoreAdapter
-  readonly pipeline: import("@mail-station/mailbox-station").MailboxPipeline
-  readonly logger: import("@mail-station/mailbox-station").StationLogger
+  readonly pipeline: import("mailbox-station").MailboxPipeline
+  readonly logger: import("mailbox-station").StationLogger
   readonly clock: () => Date
   readonly config: ResolvedGmailConfig
 }

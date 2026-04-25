@@ -13,9 +13,9 @@ import type {
   StoreAdapter,
   StoreError,
   TriggerJob,
-} from "@mail-station/mailbox-station"
-import { err, ok, AccountId as makeAccountId, JobId as makeJobId } from "@mail-station/mailbox-station"
-import type { Result } from "@mail-station/mailbox-station"
+} from "mailbox-station"
+import { err, ok, AccountId as makeAccountId, JobId as makeJobId } from "mailbox-station"
+import type { Result } from "mailbox-station"
 
 /**
  * Reference in-memory implementation of StoreAdapter. Used to:

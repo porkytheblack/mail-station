@@ -7,7 +7,7 @@ import {
   UserId as makeUserId,
   err,
   ok,
-} from "@mail-station/mailbox-station"
+} from "mailbox-station"
 import type {
   AccountId,
   AccountPatch,
@@ -24,7 +24,7 @@ import type {
   StoreAdapter,
   StoreError,
   TriggerJob,
-} from "@mail-station/mailbox-station"
+} from "mailbox-station"
 
 /**
  * SQLite Store adapter, demonstrating how to satisfy the contract.

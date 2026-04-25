@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { AccountId as makeAccountId } from "@mail-station/mailbox-station"
+import { AccountId as makeAccountId } from "mailbox-station"
 import type { gmail_v1 } from "@googleapis/gmail"
 import { _internals, parseGmailMessage } from "./parser.js"
 

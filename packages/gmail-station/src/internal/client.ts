@@ -1,7 +1,7 @@
 import { gmail, type gmail_v1 } from "@googleapis/gmail"
 import { OAuth2Client } from "google-auth-library"
-import { err, ok } from "@mail-station/mailbox-station"
-import type { Result, ResolverError } from "@mail-station/mailbox-station"
+import { err, ok } from "mailbox-station"
+import type { Result, ResolverError } from "mailbox-station"
 import type {
   GmailClient,
   GmailClientFactory,

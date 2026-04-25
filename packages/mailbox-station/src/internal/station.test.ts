@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { createReferenceStore, synthMessage } from "@mail-station/mailbox-station-conformance"
+import { createReferenceStore, synthMessage } from "mailbox-station-conformance"
 import { ok, UserId } from "../index.js"
 import type { ProviderFactory, MessageHandlerFn, MailboxEvent, MailMessage } from "./types.js"
 

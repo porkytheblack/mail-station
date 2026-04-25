@@ -2,9 +2,9 @@
 
 Provider-agnostic mailbox-watch system. Two published npm packages plus a conformance test battery, all in a single pnpm workspace.
 
-- **`@mail-station/mailbox-station`** — provider-agnostic core: outbox commit, trigger worker, Store interface, handler interface. Promise + `Result` API by default; `/effect` subpath for Effect-TS users.
-- **`@mail-station/gmail-station`** — Gmail provider. Wraps `@googleapis/gmail`, OAuth2 refresh, the watch lifecycle, Pub/Sub pull ingress, and a pure MIME parser.
-- **`@mail-station/mailbox-station-conformance`** — Vitest-driven test battery (~25 tests) for verifying user-supplied Store implementations against the documented invariants.
+- **`mailbox-station`** — provider-agnostic core: outbox commit, trigger worker, Store interface, handler interface. Promise + `Result` API by default; `/effect` subpath for Effect-TS users.
+- **`gmail-station`** — Gmail provider. Wraps `@googleapis/gmail`, OAuth2 refresh, the watch lifecycle, Pub/Sub pull ingress, and a pure MIME parser.
+- **`mailbox-station-conformance`** — Vitest-driven test battery (~25 tests) for verifying user-supplied Store implementations against the documented invariants.
 
 The full design lives in [`guides/design-spec.md`](./guides/design-spec.md). The PRD is [issue #1](https://github.com/porkytheblack/mail-station/issues/1).
 
@@ -31,8 +31,8 @@ pnpm test          # vitest across all packages + examples
 ## Quickstart
 
 ```ts
-import { createStation, ok, UserId } from "@mail-station/mailbox-station"
-import { gmailProvider } from "@mail-station/gmail-station"
+import { createStation, ok, UserId } from "mailbox-station"
+import { gmailProvider } from "gmail-station"
 import { createSqliteStore } from "./sqlite-store.js"
 
 const station = createStation({
