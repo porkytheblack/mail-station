@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/mailbox-station" },
+    { "path": "./packages/mailbox-station-conformance" },
+    { "path": "./packages/gmail-station" },
+    { "path": "./examples/basic-sqlite" }
+  ]
+}
