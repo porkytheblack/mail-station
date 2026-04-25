@@ -4,10 +4,21 @@ import type { ResolvedWorkerConfig, WorkerConfig } from "./types.js"
 
 export const resolveWorkerConfig = (input: WorkerConfig | undefined): ResolvedWorkerConfig => {
   const c = input ?? {}
+  const triggerConcurrency = c.triggerConcurrency ?? 8
+  const claimBatchSize = c.claimBatchSize ?? 16
+  if (triggerConcurrency < 1) {
+    throw new Error(`createStation: triggerConcurrency must be >= 1, got ${triggerConcurrency}`)
+  }
+  if (claimBatchSize < triggerConcurrency) {
+    // Equal would stall the pipeline (no slack while in-flight handlers complete).
+    throw new Error(
+      `createStation: claimBatchSize (${claimBatchSize}) must be >= triggerConcurrency (${triggerConcurrency})`,
+    )
+  }
   return {
     workerId: c.workerId ?? defaultWorkerId(),
-    triggerConcurrency: c.triggerConcurrency ?? 8,
-    claimBatchSize: c.claimBatchSize ?? 16,
+    triggerConcurrency,
+    claimBatchSize,
     leaseDurationMs: c.leaseDurationMs ?? 5 * 60_000,
     idlePollIntervalMs: c.idlePollIntervalMs ?? 1_000,
     maxAttempts: c.maxAttempts ?? 10,

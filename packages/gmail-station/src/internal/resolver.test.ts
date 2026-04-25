@@ -49,6 +49,7 @@ const fakeFactory = (
     let pageIdx = 0
     const get = typeof pages === "function" ? pages() : pages
     const client: GmailClient = {
+      validateRefreshToken: async () => ok(undefined),
       watch: async () => ok({ historyId: "999", expiration: new Date(0) }),
       stop: async () => ok(undefined),
       historyList: async () => {
@@ -211,6 +212,7 @@ describe("gmail resolver", () => {
       },
     ]
     const factory: GmailClientFactory = () => ({
+      validateRefreshToken: async () => ok(undefined),
       watch: async () => ok({ historyId: "1", expiration: new Date(0) }),
       stop: async () => ok(undefined),
       historyList: async () => ok(pages[0]!),

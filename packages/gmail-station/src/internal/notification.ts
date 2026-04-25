@@ -1,20 +1,27 @@
+import { Either, Schema } from "effect"
 import type { Notification } from "./types.js"
 
-const isString = (v: unknown): v is string => typeof v === "string" && v.length > 0
-const isNumber = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v)
-
 /**
- * Decode a Pub/Sub notification payload.
+ * Effect Schema for the Gmail Pub/Sub notification payload.
  *
  * Gmail publishes JSON like `{ emailAddress: string, historyId: number | string }`
- * base64-encoded as the Pub/Sub message data. Buffer is provided pre-decoded
- * by the SDK (`message.data` is the raw bytes); we just JSON.parse and
- * validate the shape.
- *
- * `historyId` arrives as a number from Gmail. We coerce to string because
- * the rest of the API expects a string (history.list takes a string).
+ * base64-encoded as the message data (the SDK pre-decodes to raw bytes via
+ * `message.data`). historyId is a number on the wire; downstream API takes
+ * a string. The schema accepts both, normalizes to string, and lowercases
+ * the email.
  */
-export const decodeNotification = (data: Buffer | string): { ok: true; value: Notification } | { ok: false; error: string } => {
+export const NotificationPayloadSchema = Schema.Struct({
+  emailAddress: Schema.String.pipe(Schema.minLength(1)),
+  historyId: Schema.Union(Schema.String, Schema.Number),
+})
+
+export type NotificationPayload = Schema.Schema.Type<typeof NotificationPayloadSchema>
+
+const decodePayload = Schema.decodeUnknownEither(NotificationPayloadSchema, { errors: "all" })
+
+export const decodeNotification = (
+  data: Buffer | string,
+): { ok: true; value: Notification } | { ok: false; error: string } => {
   let raw: unknown
   try {
     const text = typeof data === "string" ? data : data.toString("utf-8")
@@ -22,19 +29,15 @@ export const decodeNotification = (data: Buffer | string): { ok: true; value: No
   } catch (e) {
     return { ok: false, error: `not valid JSON: ${e instanceof Error ? e.message : String(e)}` }
   }
-  if (!raw || typeof raw !== "object") return { ok: false, error: "payload is not an object" }
-  const obj = raw as Record<string, unknown>
-  const email = obj.emailAddress
-  const historyId = obj.historyId
-  if (!isString(email)) return { ok: false, error: "emailAddress missing or not a string" }
-  if (!isString(historyId) && !isNumber(historyId)) {
-    return { ok: false, error: "historyId missing or not a string/number" }
+  const decoded = decodePayload(raw)
+  if (Either.isLeft(decoded)) {
+    return { ok: false, error: decoded.left.message }
   }
   return {
     ok: true,
     value: {
-      emailAddress: email.toLowerCase(),
-      historyId: String(historyId),
+      emailAddress: decoded.right.emailAddress.toLowerCase(),
+      historyId: String(decoded.right.historyId),
     },
   }
 }

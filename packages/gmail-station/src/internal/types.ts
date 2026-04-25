@@ -56,6 +56,12 @@ export type GmailCredentials = {
  * never have to try/catch around Gmail SDK quirks.
  */
 export type GmailClient = {
+  /**
+   * Validate the refresh token via a token-endpoint round trip. Used by
+   * `register` to fast-fail on `invalid_grant` before calling `users.watch`,
+   * so we don't leak a watch when the credentials are dead on arrival.
+   */
+  validateRefreshToken(): Promise<Result<void, ResolverError>>
   watch(input: {
     topicName: string
     labelIds?: ReadonlyArray<string>

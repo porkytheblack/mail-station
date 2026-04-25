@@ -21,15 +21,18 @@ const baseConfig = (overrides: Partial<ResolvedGmailConfig> = {}): ResolvedGmail
   ...overrides,
 })
 
+const baseClient = (): GmailClient => ({
+  validateRefreshToken: async () => ok(undefined),
+  watch: async () => ok({ historyId: "100", expiration: new Date(t0.getTime() + 7 * 86_400_000) }),
+  stop: async () => ok(undefined),
+  historyList: async () => ok({}),
+  messageGet: async () => ok({}),
+})
+
 describe("watch manager: register", () => {
   it("happy path → store account, return accountId", async () => {
     const store = createReferenceStore()
-    const factory: GmailClientFactory = (): GmailClient => ({
-      watch: async () => ok({ historyId: "100", expiration: new Date(t0.getTime() + 7 * 86_400_000) }),
-      stop: async () => ok(undefined),
-      historyList: async () => ok({}),
-      messageGet: async () => ok({}),
-    })
+    const factory: GmailClientFactory = () => baseClient()
     const wm = createWatchManager({
       store,
       pipeline: { processEvent: async () => "ack" },
@@ -45,17 +48,40 @@ describe("watch manager: register", () => {
     expect(a.ok && a.value.lastEventCursor).toBe("100")
   })
 
-  it("invalid_grant from watch → InvalidGrant; never persists", async () => {
+  it("invalid_grant from validateRefreshToken → InvalidGrant; never calls users.watch", async () => {
     const store = createReferenceStore()
     let watchCalled = 0
     const factory: GmailClientFactory = (): GmailClient => ({
+      ...baseClient(),
+      validateRefreshToken: async () =>
+        err({ _tag: "CredentialsRevoked", accountId: undefined as unknown as never, reason: "invalid_grant" }),
+      watch: async () => {
+        watchCalled++
+        return ok({ historyId: "1", expiration: new Date() })
+      },
+    })
+    const wm = createWatchManager({
+      store,
+      pipeline: { processEvent: async () => "ack" },
+      logger: noopLogger,
+      clock: () => t0,
+      config: baseConfig({ clientFactory: factory }),
+    })
+    const r = await wm.register({ userId: UserId("u-1"), emailAddress: "alice@example.com", refreshToken: "rt" })
+    expect(!r.ok && r.error._tag).toBe("InvalidGrant")
+    expect(watchCalled).toBe(0)
+    expect(store._accounts().length).toBe(0)
+  })
+
+  it("invalid_grant from users.watch → InvalidGrant; never persists", async () => {
+    const store = createReferenceStore()
+    let watchCalled = 0
+    const factory: GmailClientFactory = (): GmailClient => ({
+      ...baseClient(),
       watch: async () => {
         watchCalled++
         return err({ _tag: "CredentialsRevoked", accountId: undefined as unknown as never, reason: "invalid_grant" })
       },
-      stop: async () => ok(undefined),
-      historyList: async () => ok({}),
-      messageGet: async () => ok({}),
     })
     const wm = createWatchManager({
       store,
@@ -83,13 +109,11 @@ describe("watch manager: register", () => {
     })
     let watchCalled = 0
     const factory: GmailClientFactory = (): GmailClient => ({
+      ...baseClient(),
       watch: async () => {
         watchCalled++
         return ok({ historyId: "1", expiration: new Date() })
       },
-      stop: async () => ok(undefined),
-      historyList: async () => ok({}),
-      messageGet: async () => ok({}),
     })
     const wm = createWatchManager({
       store,
@@ -112,13 +136,12 @@ describe("watch manager: register", () => {
       createAccount: async () => err({ _tag: "Permanent", message: "db down" } as const),
     } as unknown as typeof store
     const factory: GmailClientFactory = (): GmailClient => ({
+      ...baseClient(),
       watch: async () => ok({ historyId: "1", expiration: new Date() }),
       stop: async () => {
         stopCalled++
         return ok(undefined)
       },
-      historyList: async () => ok({}),
-      messageGet: async () => ok({}),
     })
     const wm = createWatchManager({
       store: failingStore,
@@ -155,15 +178,13 @@ describe("watch manager: renewExpiringWatches", () => {
       now: t0,
     })
     const factory: GmailClientFactory = (creds): GmailClient => ({
+      ...baseClient(),
       watch: async () => {
         if (creds.refreshToken === "bad") {
           return err({ _tag: "ProviderTransient", message: "5xx" })
         }
         return ok({ historyId: "200", expiration: new Date(t0.getTime() + 7 * 86_400_000) })
       },
-      stop: async () => ok(undefined),
-      historyList: async () => ok({}),
-      messageGet: async () => ok({}),
     })
 
     const wm = createWatchManager({
@@ -194,10 +215,9 @@ describe("watch manager: renewExpiringWatches", () => {
     })
     if (!seed.ok) throw new Error("seed failed")
     const factory: GmailClientFactory = (): GmailClient => ({
-      watch: async () => err({ _tag: "CredentialsRevoked", accountId: undefined as unknown as never, reason: "invalid_grant" }),
-      stop: async () => ok(undefined),
-      historyList: async () => ok({}),
-      messageGet: async () => ok({}),
+      ...baseClient(),
+      watch: async () =>
+        err({ _tag: "CredentialsRevoked", accountId: undefined as unknown as never, reason: "invalid_grant" }),
     })
     const wm = createWatchManager({
       store,

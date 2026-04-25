@@ -97,6 +97,17 @@ export const defaultGmailClientFactory: GmailClientFactory = (creds, options): G
   const client = (): gmail_v1.Gmail => gmail({ version: "v1", auth: buildAuth() })
 
   return {
+    validateRefreshToken: async () => {
+      try {
+        const auth = buildAuth()
+        // Forces a token refresh through the OAuth2 token endpoint.
+        // invalid_grant surfaces as a thrown error here.
+        await retrying(() => auth.getAccessToken().then(() => undefined))
+        return ok(undefined)
+      } catch (e) {
+        return err(classify(e))
+      }
+    },
     watch: async ({ topicName, labelIds }) => {
       try {
         const res = await retrying(() =>

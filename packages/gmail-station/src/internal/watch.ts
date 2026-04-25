@@ -35,8 +35,24 @@ export const createWatchManager = (deps: GmailRuntimeDeps) => {
     refreshToken: string
   }): Promise<Result<{ accountId: AccountId }, RegisterError>> => {
     const email = input.emailAddress.toLowerCase()
+    const client = buildClient(input.refreshToken)
 
-    // 1. Pre-flight duplicate check.
+    // 1. Validate refresh token via token-endpoint refresh. Fast-fail on
+    //    invalid_grant before anything observable (no watch, no duplicate
+    //    check round-trip if we already know the credentials are dead).
+    const validate = await client.validateRefreshToken()
+    if (!validate.ok) {
+      if (validate.error._tag === "CredentialsRevoked") {
+        return err({ _tag: "InvalidGrant", reason: validate.error.reason })
+      }
+      if (validate.error._tag === "ProviderTransient") {
+        return err({ _tag: "ProviderTransient", message: validate.error.message, cause: validate.error.cause })
+      }
+      const errMsg = "message" in validate.error ? (validate.error as { message?: string }).message : undefined
+      return err({ _tag: "ProviderPermanent", message: errMsg ?? validate.error._tag, cause: validate.error })
+    }
+
+    // 2. Pre-flight duplicate check.
     const existing = await store.getAccountByEmail("gmail", email)
     if (existing.ok) {
       return err({ _tag: "DuplicateAccount", emailAddress: email })
@@ -48,9 +64,7 @@ export const createWatchManager = (deps: GmailRuntimeDeps) => {
       return err({ _tag: "ProviderTransient", message: msg })
     }
 
-    // 2. Validate refresh token + start watch in one shot. The watch call
-    //    triggers a token-endpoint refresh, so invalid_grant surfaces here.
-    const client = buildClient(input.refreshToken)
+    // 3. users.watch (token already validated above).
     const watch = await client.watch({
       topicName: config.pubsubTopic,
       ...(config.labelFilter ? { labelIds: [...config.labelFilter] } : {}),
