@@ -3,8 +3,8 @@ import {
   MessageId as makeMessageId,
   ThreadId as makeThreadId,
   UserId as makeUserId,
-} from "@mail-station/mailbox-station"
-import type { AccountId, MailMessage, MessageId } from "@mail-station/mailbox-station"
+} from "mailbox-station"
+import type { AccountId, MailMessage, MessageId } from "mailbox-station"
 
 export const synthMessage = (
   overrides: Omit<Partial<MailMessage>, "messageId" | "threadId"> & {

@@ -37,7 +37,7 @@ export const createStationEffect = <P extends Record<string, ProviderFactory>>(
   input: StationInput<P>,
 ): Effect.Effect<StationEffect<P>> => Effect.sync(() => lift(createStation(input)))
 
-export class StationService extends Context.Tag("@mail-station/StationService")<
+export class StationService extends Context.Tag("mailbox-station/StationService")<
   StationService,
   {
     readonly start: Effect.Effect<void>

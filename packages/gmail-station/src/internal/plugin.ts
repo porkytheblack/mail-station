@@ -2,7 +2,7 @@ import type {
   ProviderBuildDeps,
   ProviderFactory,
   ProviderRuntime,
-} from "@mail-station/mailbox-station"
+} from "mailbox-station"
 import { startIngress } from "./ingress.js"
 import { createGmailResolver } from "./resolver.js"
 import { createWatchManager } from "./watch.js"

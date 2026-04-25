@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["basic-sqlite-example"]
+  "ignore": ["basic-sqlite-example", "gmail-e2e-example"]
 }

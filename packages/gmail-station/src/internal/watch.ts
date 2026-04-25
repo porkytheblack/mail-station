@@ -1,5 +1,5 @@
-import { err, ok } from "@mail-station/mailbox-station"
-import type { AccountId, MailboxAccount, Result } from "@mail-station/mailbox-station"
+import { err, ok } from "mailbox-station"
+import type { AccountId, MailboxAccount, Result } from "mailbox-station"
 import { defaultGmailClientFactory } from "./client.js"
 import type {
   GmailClient,
@@ -30,7 +30,7 @@ export const createWatchManager = (deps: GmailRuntimeDeps) => {
   }
 
   const register = async (input: {
-    userId: import("@mail-station/mailbox-station").UserIdType
+    userId: import("mailbox-station").UserIdType
     emailAddress: string
     refreshToken: string
   }): Promise<Result<{ accountId: AccountId }, RegisterError>> => {

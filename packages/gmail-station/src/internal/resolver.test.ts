@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
-import { ok, err, UserId } from "@mail-station/mailbox-station"
+import { ok, err, UserId } from "mailbox-station"
 import type { gmail_v1 } from "@googleapis/gmail"
 import { createGmailResolver } from "./resolver.js"
-import { createReferenceStore } from "@mail-station/mailbox-station-conformance"
+import { createReferenceStore } from "mailbox-station-conformance"
 import type { GmailClient, GmailClientFactory, ResolvedGmailConfig } from "./types.js"
 
 const t0 = new Date("2026-01-01T00:00:00Z")

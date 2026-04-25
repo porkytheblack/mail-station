@@ -1,4 +1,4 @@
-import { err, ok } from "@mail-station/mailbox-station"
+import { err, ok } from "mailbox-station"
 import type {
   AccountId,
   MailMessage,
@@ -9,7 +9,7 @@ import type {
   ResolverError,
   Result,
   StoreAdapter,
-} from "@mail-station/mailbox-station"
+} from "mailbox-station"
 import { defaultGmailClientFactory } from "./client.js"
 import { decodeNotification } from "./notification.js"
 import { parseGmailMessage } from "./parser.js"
@@ -170,7 +170,7 @@ const readCredentials = (account: MailboxAccount): GmailCredentials => {
   return { refreshToken, accessToken, accessTokenExpiresAt }
 }
 
-const storeErrMessage = (e: import("@mail-station/mailbox-station").StoreError): string => {
+const storeErrMessage = (e: import("mailbox-station").StoreError): string => {
   switch (e._tag) {
     case "Transient":
     case "Permanent":

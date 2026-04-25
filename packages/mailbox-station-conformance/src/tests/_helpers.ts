@@ -1,5 +1,5 @@
-import { UserId as makeUserId } from "@mail-station/mailbox-station"
-import type { MailboxAccount, Provider, StoreAdapter } from "@mail-station/mailbox-station"
+import { UserId as makeUserId } from "mailbox-station"
+import type { MailboxAccount, Provider, StoreAdapter } from "mailbox-station"
 
 export const t0 = new Date("2026-01-01T00:00:00Z")
 export const dt = (ms: number): Date => new Date(t0.getTime() + ms)

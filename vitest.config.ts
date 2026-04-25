@@ -8,19 +8,19 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: /^@mail-station\/mailbox-station-conformance$/,
+        find: /^mailbox-station-conformance$/,
         replacement: here("./packages/mailbox-station-conformance/src/index.ts"),
       },
       {
-        find: /^@mail-station\/mailbox-station\/effect$/,
+        find: /^mailbox-station\/effect$/,
         replacement: here("./packages/mailbox-station/src/effect.ts"),
       },
       {
-        find: /^@mail-station\/mailbox-station$/,
+        find: /^mailbox-station$/,
         replacement: here("./packages/mailbox-station/src/index.ts"),
       },
       {
-        find: /^@mail-station\/gmail-station$/,
+        find: /^gmail-station$/,
         replacement: here("./packages/gmail-station/src/index.ts"),
       },
     ],

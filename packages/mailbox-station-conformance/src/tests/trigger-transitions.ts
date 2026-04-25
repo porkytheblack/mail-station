@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import type { JobIdType, StoreAdapter } from "@mail-station/mailbox-station"
+import type { JobIdType, StoreAdapter } from "mailbox-station"
 import { synthMessage } from "../fixtures.js"
 import { dt, seedAccount, t0 } from "./_helpers.js"
 

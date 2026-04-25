@@ -1,0 +1,22 @@
+{
+  "name": "gmail-e2e-example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -b",
+    "setup:gcp": "bash scripts/setup-gcp.sh",
+    "start": "tsc -b && node --env-file=.env dist/main.js",
+    "send:fixtures": "tsc -b && node --env-file=.env dist/send-fixtures.js",
+    "send:real": "tsc -b && node --env-file=.env dist/send-real.js"
+  },
+  "dependencies": {
+    "gmail-station": "workspace:*",
+    "mailbox-station": "workspace:*",
+    "better-sqlite3": "^11.5.0",
+    "pdf-lib": "^1.17.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.11"
+  }
+}

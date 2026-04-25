@@ -4,6 +4,7 @@
     { "path": "./packages/mailbox-station" },
     { "path": "./packages/mailbox-station-conformance" },
     { "path": "./packages/gmail-station" },
-    { "path": "./examples/basic-sqlite" }
+    { "path": "./examples/basic-sqlite" },
+    { "path": "./examples/gmail-e2e" }
   ]
 }

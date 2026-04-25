@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
-import { AccountId as makeAccountId } from "@mail-station/mailbox-station"
-import type { StoreAdapter } from "@mail-station/mailbox-station"
+import { AccountId as makeAccountId } from "mailbox-station"
+import type { StoreAdapter } from "mailbox-station"
 import { aUserId } from "../fixtures.js"
 import { dt, seedAccount, t0 } from "./_helpers.js"
 
