@@ -1,6 +1,6 @@
 {
   "name": "mailbox-station",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "license": "MIT",
   "engines": {
@@ -18,7 +18,11 @@
       "import": "./dist/effect.js"
     }
   },
-  "files": ["dist", "src", "README.md"],
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
   "scripts": {
     "build": "tsc -b",
     "test": "vitest run"
