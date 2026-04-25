@@ -10,13 +10,9 @@
     "build": "tsc -b",
     "clean": "tsc -b --clean",
     "test": "vitest run",
-    "typecheck": "tsc -b",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "pnpm build && changeset publish"
+    "typecheck": "tsc -b"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.9",
     "@types/node": "^22.10.0",
     "typescript": "^5.6.3",
     "vitest": "^2.1.5"
